@@ -4,6 +4,7 @@ import org.gradle.plugins.ide.idea.model.IdeaLanguageLevel
 
 plugins {
     idea
+    java
 }
 
 idea {
@@ -16,10 +17,10 @@ idea {
     }
 }
 
-
+//
 allprojects {
     group = "ru.otus"
-
+    version = "1.0.0"
     repositories {
         mavenLocal()
         mavenCentral()
