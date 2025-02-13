@@ -1,5 +1,3 @@
-//Описанио, как должна происходить сборка проекта.
-
 import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension
 import name.remal.gradle_plugins.sonarlint.SonarLintExtension
 import org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
@@ -111,7 +109,6 @@ subprojects {
 
         dependsOn("spotlessApply")
     }
-
     apply<name.remal.gradle_plugins.sonarlint.SonarLintPlugin>()
     configure<SonarLintExtension> {
         nodeJs {

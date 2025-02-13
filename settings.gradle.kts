@@ -1,6 +1,3 @@
-//Нужен для определения настроек всего проекта.
-//Это будет влиять на все модули
-
 rootProject.name = "2024-10-java-professional"
 
 pluginManagement {
@@ -24,3 +21,5 @@ pluginManagement {
         id("com.diffplug.spotless") version spotless
     }
 }
+
+include("hw01_Gradle")
