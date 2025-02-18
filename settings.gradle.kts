@@ -24,3 +24,4 @@ pluginManagement {
 
 include("hw01_Gradle")
 include("hw02_generics")
+include("hw04_gc")
