@@ -21,9 +21,9 @@ public class ResourcesFileLoader implements Loader {
     // Читает файл и возвращает результат коллекцию
     @Override
     public List<Measurement> load() {
-        InputStream resource = this.getClass().getClassLoader().getResourceAsStream(fileName);
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
+
+        try (InputStream resource = this.getClass().getClassLoader().getResourceAsStream(fileName)){
+            ObjectMapper objectMapper = new ObjectMapper();
             return objectMapper.readValue(resource, new TypeReference<>() {});
         } catch (IOException e) {
             log.error(e.getMessage(), e);
