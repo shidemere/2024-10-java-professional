@@ -1,12 +1,11 @@
 package ru.otus.dataprocessor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FileSerializer implements Serializer {
     private static final Logger log = LoggerFactory.getLogger(FileSerializer.class);

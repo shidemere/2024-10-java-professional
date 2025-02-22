@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.otus.model.Measurement;
@@ -22,7 +21,7 @@ public class ResourcesFileLoader implements Loader {
     @Override
     public List<Measurement> load() {
 
-        try (InputStream resource = this.getClass().getClassLoader().getResourceAsStream(fileName)){
+        try (InputStream resource = this.getClass().getClassLoader().getResourceAsStream(fileName)) {
             ObjectMapper objectMapper = new ObjectMapper();
             return objectMapper.readValue(resource, new TypeReference<>() {});
         } catch (IOException e) {
