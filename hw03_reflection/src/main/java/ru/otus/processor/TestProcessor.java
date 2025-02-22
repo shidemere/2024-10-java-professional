@@ -1,36 +1,30 @@
 package ru.otus.processor;
 
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.otus.annotation.After;
-import ru.otus.annotation.Before;
-import ru.otus.annotation.Test;
+import ru.otus.util.MethodCache;
 import ru.otus.util.TestStatistic;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 public class TestProcessor<T> {
     private static final Logger logger = LoggerFactory.getLogger(TestProcessor.class);
 
-    public TestProcessor(Class<T> clazz) {
+    public TestProcessor(Class<T> clazz)
+            throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
 
         TestStatistic statistic = new TestStatistic();
-        T t;
+        MethodCache cache = new MethodCache(clazz.getDeclaredMethods());
 
-        try {
-            t = clazz.getDeclaredConstructor().newInstance();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        for (Method testMethod : cache.getTestMethods()) {
+            T t = clazz.getDeclaredConstructor().newInstance();
+            cache.getBeforeMethods().forEach(method -> invokeWithCounter(t, method, statistic));
+            invokeWithCounter(t, testMethod, statistic);
+            cache.getAfterMethods().forEach(method -> invokeWithCounter(t, method, statistic));
         }
 
-        Method[] declaredMethods = t.getClass().getDeclaredMethods();
-
-        invokeMethodsByAnnotation(t, method -> method.isAnnotationPresent(Before.class), declaredMethods, statistic);
-        invokeMethodsByAnnotation(t, method -> method.isAnnotationPresent(Test.class), declaredMethods, statistic);
-        invokeMethodsByAnnotation(t, method -> method.isAnnotationPresent(After.class), declaredMethods, statistic);
-
+        // Тогда и логгирование надо сделать иначе. Или нет?
         if (statistic.getAllTestCounter() == 0) {
             logger.warn("Class is not annotated with annotations for testing.");
         }
@@ -40,13 +34,6 @@ public class TestProcessor<T> {
         logger.info("Success tests: {}", statistic.getSuccessCounter());
         logger.info("Failed tests: {}", statistic.getFailCounter());
     }
-
-    private void invokeMethodsByAnnotation(
-            Object target, Predicate<Method> predicate, Method[] method, TestStatistic statistic) {
-        List<Method> methodList = Arrays.stream(method).filter(predicate).toList();
-        methodList.forEach(m -> invokeWithCounter(target, m, statistic));
-    }
-
 
     private void invokeWithCounter(Object target, Method method, TestStatistic statistic) {
         statistic.incrementAll();
