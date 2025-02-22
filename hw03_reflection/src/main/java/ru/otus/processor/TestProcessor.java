@@ -1,25 +1,22 @@
 package ru.otus.processor;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.otus.annotation.After;
 import ru.otus.annotation.Before;
 import ru.otus.annotation.Test;
+import ru.otus.util.TestStatistic;
 
 public class TestProcessor<T> {
     private static final Logger logger = LoggerFactory.getLogger(TestProcessor.class);
 
     public TestProcessor(Class<T> clazz) {
 
-        /*
-           Из за запрета на состояние пришлось использовать массив.
-           Так как обертки, оказывается, неизменяемы.
-           И если я передаю внутрь другого метода обертку - внутри метода создаются новые.
-        */
-        int[] successCounter = new int[1];
-        int[] failCounter = new int[1];
-        int[] allTestCounter = new int[1];
+        TestStatistic statistic = new TestStatistic();
         T t;
 
         try {
@@ -28,35 +25,36 @@ public class TestProcessor<T> {
             throw new RuntimeException(e);
         }
 
-        Method[] declaredMethods = clazz.getDeclaredMethods();
-        for (Method method : declaredMethods) {
-            if (method.isAnnotationPresent(Before.class)) {
-                invokeWithCounter(t, method, allTestCounter, successCounter, failCounter);
-            } else if (method.isAnnotationPresent(Test.class)) {
-                invokeWithCounter(t, method, allTestCounter, successCounter, failCounter);
-            } else if (method.isAnnotationPresent(After.class)) {
-                invokeWithCounter(t, method, allTestCounter, successCounter, failCounter);
-            }
-        }
+        Method[] declaredMethods = t.getClass().getDeclaredMethods();
 
-        if (successCounter[0] == 0 && failCounter[0] == 0) {
+        invokeMethodsByAnnotation(t, method -> method.isAnnotationPresent(Before.class), declaredMethods, statistic);
+        invokeMethodsByAnnotation(t, method -> method.isAnnotationPresent(Test.class), declaredMethods, statistic);
+        invokeMethodsByAnnotation(t, method -> method.isAnnotationPresent(After.class), declaredMethods, statistic);
+
+        if (statistic.getAllTestCounter() == 0) {
             logger.warn("Class is not annotated with annotations for testing.");
         }
 
         logger.info("Testing is done");
-        logger.info("All tests: {}", allTestCounter[0]);
-        logger.info("Success tests: {}", successCounter[0]);
-        logger.info("Failed tests: {}", failCounter[0]);
+        logger.info("All tests: {}", statistic.getAllTestCounter());
+        logger.info("Success tests: {}", statistic.getSuccessCounter());
+        logger.info("Failed tests: {}", statistic.getFailCounter());
     }
 
-    private void invokeWithCounter(
-            Object target, Method method, int[] allTestCounter, int[] successCounter, int[] failCounter) {
-        allTestCounter[0]++;
+    private void invokeMethodsByAnnotation(
+            Object target, Predicate<Method> predicate, Method[] method, TestStatistic statistic) {
+        List<Method> methodList = Arrays.stream(method).filter(predicate).toList();
+        methodList.forEach(m -> invokeWithCounter(target, m, statistic));
+    }
+
+
+    private void invokeWithCounter(Object target, Method method, TestStatistic statistic) {
+        statistic.incrementAll();
         try {
             method.invoke(target);
-            successCounter[0]++;
+            statistic.incrementSuccess();
         } catch (Exception e) {
-            failCounter[0]++;
+            statistic.incrementFail();
         }
     }
 }
