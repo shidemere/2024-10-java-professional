@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  pg-docker:
+    image: postgres:13
+    container_name: pg-docker
+    ports:
+      - "5430:5432"
+    environment:
+      POSTGRES_USER: usr
+      POSTGRES_PASSWORD: pwd
+      POSTGRES_DB: demoDB
+    restart: "no"
+    # Данные хранятся в памяти и удаляются при остановке контейнера
+    tmpfs:
+      - /var/lib/postgresql/data
