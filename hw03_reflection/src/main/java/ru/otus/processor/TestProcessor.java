@@ -2,7 +2,7 @@ package ru.otus.processor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.otus.util.MethodCache;
+import ru.otus.util.MethodContainer;
 import ru.otus.util.TestStatistic;
 
 import java.lang.reflect.InvocationTargetException;
@@ -15,7 +15,7 @@ public class TestProcessor<T> {
             throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
 
         TestStatistic statistic = new TestStatistic();
-        MethodCache cache = new MethodCache(clazz.getDeclaredMethods());
+        MethodContainer cache = new MethodContainer(clazz.getDeclaredMethods());
 
         for (Method testMethod : cache.getTestMethods()) {
             T t = clazz.getDeclaredConstructor().newInstance();
@@ -24,7 +24,6 @@ public class TestProcessor<T> {
             cache.getAfterMethods().forEach(method -> invokeWithCounter(t, method, statistic));
         }
 
-        // Тогда и логгирование надо сделать иначе. Или нет?
         if (statistic.getAllTestCounter() == 0) {
             logger.warn("Class is not annotated with annotations for testing.");
         }

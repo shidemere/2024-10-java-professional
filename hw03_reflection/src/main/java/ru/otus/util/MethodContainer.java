@@ -1,21 +1,20 @@
 package ru.otus.util;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import ru.otus.annotation.After;
 import ru.otus.annotation.Before;
 import ru.otus.annotation.Test;
 
-public class MethodCache {
+public class MethodContainer {
 
     private final List<Method> beforeMethods = new LinkedList<>();
     private final List<Method> afterMethods = new LinkedList<>();
     private final List<Method> testMethods = new LinkedList<>();
 
-    public MethodCache(Method[] methods) {
-        Arrays.stream(methods).forEach(method -> {
+    public MethodContainer(Method[] methods) {
+        for (Method method : methods) {
             if (method.isAnnotationPresent(Before.class)) {
                 beforeMethods.add(method);
             }
@@ -25,7 +24,7 @@ public class MethodCache {
             if (method.isAnnotationPresent(Test.class)) {
                 testMethods.add(method);
             }
-        });
+        }
     }
 
     public List<Method> getBeforeMethods() {
