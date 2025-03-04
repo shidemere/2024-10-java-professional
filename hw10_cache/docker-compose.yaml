@@ -1,0 +1,12 @@
+version: '3.9'
+
+services:
+  homework_db:
+    image: postgres:13.3
+    container_name: homework10
+    environment:
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: main
+    ports:
+      - "5430:5432"
