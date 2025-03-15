@@ -42,7 +42,7 @@ allprojects {
 
     val jetty: String by project
     val freemarker: String by project
-
+    val hibernateCoreVersion: String by project
     val reflections: String by project
 
     apply(plugin = "io.spring.dependency-management")
@@ -58,7 +58,7 @@ allprojects {
             dependency("org.openjdk.jmh:jmh-generator-annprocess:$jmh")
             dependency("org.glassfish:jakarta.json:$glassfishJson")
             dependency("org.ow2.asm:asm-commons:$asm")
-
+            dependency("org.hibernate:hibernate-core:$hibernateCoreVersion")
             dependency("com.google.code.findbugs:jsr305:$jsr305")
             dependency("org.redisson:redisson:$redisson")
 
