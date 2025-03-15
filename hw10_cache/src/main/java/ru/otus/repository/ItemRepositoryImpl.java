@@ -10,14 +10,14 @@ import ru.otus.model.Customer;
 import ru.otus.model.Item;
 
 public class ItemRepositoryImpl implements ItemRepository {
-    private final MyCache<Long, Item> itemCache;
+    private final MyCache<Integer, Item> itemCache;
 
-    public ItemRepositoryImpl(MyCache<Long, Item> itemCache) {
+    public ItemRepositoryImpl(MyCache<Integer, Item> itemCache) {
         this.itemCache = itemCache;
     }
 
     @Override
-    public Customer findCustomersByItemId(long itemId) {
+    public Customer findCustomersByItemId(int itemId) {
         if (itemCache.get(itemId) != null) {
             Item item = itemCache.get(itemId);
             return item.getCustomer();

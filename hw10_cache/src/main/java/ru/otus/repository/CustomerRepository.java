@@ -6,7 +6,7 @@ import ru.otus.model.Item;
 
 public interface CustomerRepository {
 
-    List<Item> getItemsByCustomerId(long customerId);
+    List<Item> getItemsByCustomerId(int customerId);
 
     void remove(Customer customer);
 }

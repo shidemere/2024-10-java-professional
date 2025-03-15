@@ -29,31 +29,31 @@ public class HWCacheDemo {
 
         // пример, когда Idea предлагает упростить код, при этом может появиться "спец"-эффект
         @SuppressWarnings("java:S1604")
-        HwListener<Long, Customer> customerListener = new HwListener<Long, Customer>() {
+        HwListener<Integer, Customer> customerListener = new HwListener<Integer, Customer>() {
             @Override
-            public void notify(Long key, Customer value, String action) {
+            public void notify(Integer key, Customer value, String action) {
                 logger.info("!Customer Listener! key:{}, value:{}, action: {}", key, value, action);
             }
         };
-        MyCache<Long, Customer> customerCache = new MyCache<>();
+        MyCache<Integer, Customer> customerCache = new MyCache<>();
         customerCache.addListener(customerListener);
 
-        HwListener<Long, Item> itemListener = new HwListener<Long, Item>() {
+        HwListener<Integer, Item> itemListener = new HwListener<Integer, Item>() {
             @Override
-            public void notify(Long key, Item value, String action) {
+            public void notify(Integer key, Item value, String action) {
                 logger.info("!Item Listener! key:{}, value:{}, action: {}", key, value, action);
             }
         };
-        MyCache<Long, Item> itemCache = new MyCache<>();
+        MyCache<Integer, Item> itemCache = new MyCache<>();
         itemCache.addListener(itemListener);
 
         CustomerRepository customerRepository = new CustomerRepositoryImpl(customerCache);
-        List<Item> itemsByCustomerId = customerRepository.getItemsByCustomerId(1L);
-        System.out.printf("Items for customer with ID=%d is: {%s}%n", 1L, itemsByCustomerId);
+        List<Item> itemsByCustomerId = customerRepository.getItemsByCustomerId(1);
+        System.out.printf("Items for customer with ID=%d is: {%s}%n", 1, itemsByCustomerId);
 
         ItemRepository itemRepository = new ItemRepositoryImpl(itemCache);
-        Customer customer = itemRepository.findCustomersByItemId(3L);
-        System.out.printf("Customer for item with ID=%d is: {%s}%n", 3L, customer);
+        Customer customer = itemRepository.findCustomersByItemId(3);
+        System.out.printf("Customer for item with ID=%d is: {%s}%n", 3, customer);
 
         System.out.printf("Prepare for deleting item {%s}%n", itemsByCustomerId.get(0));
         itemRepository.remove(itemsByCustomerId.get(0));

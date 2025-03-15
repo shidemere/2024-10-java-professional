@@ -3,7 +3,9 @@ package ru.otus.cache;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class MyCache<K, V> implements HwCache<K, V> {
     // Надо реализовать эти методы
     private final Map<K, V> cache;
@@ -42,7 +44,11 @@ public class MyCache<K, V> implements HwCache<K, V> {
 
     private void notifyListeners(K key, V value, String action) {
         for (HwListener<K, V> listener : listeners) {
-            listener.notify(key, value, action);
+            try {
+                listener.notify(key, value, action);
+            } catch (Exception e) {
+                log.error("Не удалось оповестить слушателей: {}", e.getMessage());
+            }
         }
     }
 }

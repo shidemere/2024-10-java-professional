@@ -4,7 +4,7 @@ import ru.otus.model.Customer;
 import ru.otus.model.Item;
 
 public interface ItemRepository {
-    Customer findCustomersByItemId(long itemId);
+    Customer findCustomersByItemId(int itemId);
 
     void remove(Item item);
 }
