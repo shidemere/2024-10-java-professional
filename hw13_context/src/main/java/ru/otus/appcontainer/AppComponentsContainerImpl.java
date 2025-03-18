@@ -1,6 +1,7 @@
 package ru.otus.appcontainer;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.*;
@@ -37,31 +38,51 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
                 throw new RuntimeException("Duplicate app component name: " + appComponentName);
             }
 
-            Constructor<?>[] declaredConstructors = configClass.getDeclaredConstructors();
-            if (declaredConstructors.length > 1) {
-                logger.error("More than one constructor: {}", declaredConstructors.length);
-                throw new RuntimeException("Too many constructors: " + declaredConstructors.length);
-            }
+            checkClassConstructor(configClass);
+
             try {
-                var appObject = configClass.getConstructor().newInstance();
-                Parameter[] parameters = method.getParameters();
-                Object appComponent;
-                if (parameters.length == 0) {
-                    appComponent = method.invoke(appObject);
-                } else {
-                    var methodParamObjects = Arrays.stream(parameters)
-                            .map(parameter -> getAppComponent(parameter.getType()))
-                            .toArray();
-                    appComponent = method.invoke(appObject, methodParamObjects);
-                }
+                Object appComponent = createInstance(configClass, method);
                 appComponents.add(appComponent);
                 appComponentsByName.put(appComponentName, appComponent);
-
-            } catch (Exception e) {
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
                 logger.error("Error while creating bean annotated AppComponent: {}", e.getMessage());
-                throw new RuntimeException();
+                throw new RuntimeException(e);
             }
         }
+    }
+
+    /**
+     * Проверка класса на то, что у него только один конструктор.
+     * @param configClass класс, для которого проводится проверка
+     */
+    private static void checkClassConstructor(Class<?> configClass) {
+        Constructor<?>[] declaredConstructors = configClass.getDeclaredConstructors();
+        if (declaredConstructors.length > 1) {
+            logger.error("More than one constructor: {}", declaredConstructors.length);
+            throw new RuntimeException("Too many constructors: " + declaredConstructors.length);
+        }
+    }
+
+    /**
+     * Создание инстанса класса через рефлексию.
+     * @param configClass класс, инстанс которого создаём
+     * @param method аргументы конструктора, необходимые для создания объекта в случае, если конструктор
+     *               что-то инициализирует
+     * @return объект с инициализированными через конструктор (в случае их существования) полями.
+     */
+    private Object createInstance(Class<?> configClass, Method method) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        var appObject = configClass.getConstructor().newInstance();
+        Parameter[] parameters = method.getParameters();
+        Object appComponent;
+        if (parameters.length == 0) {
+            appComponent = method.invoke(appObject);
+        } else {
+            var methodParamObjects = Arrays.stream(parameters)
+                    .map(parameter -> getAppComponent(parameter.getType()))
+                    .toArray();
+            appComponent = method.invoke(appObject, methodParamObjects);
+        }
+        return appComponent;
     }
 
     private void checkConfigClass(Class<?> configClass) {
