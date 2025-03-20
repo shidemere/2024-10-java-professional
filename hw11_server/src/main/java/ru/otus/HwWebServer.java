@@ -1,7 +1,5 @@
 package ru.otus;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import ru.otus.configuration.HibernateConfiguration;
 import ru.otus.migration.MigrationsExecutorFlyway;
 import ru.otus.repository.ClientRepository;
@@ -22,22 +20,23 @@ public class HwWebServer {
     private static final String TEMPLATES_DIR = "/templates/";
 
     public static void main(String[] args) throws Exception {
-        MigrationsExecutorFlyway flyway = new MigrationsExecutorFlyway(HibernateConfiguration.getDataSource());
+        HibernateConfiguration hibernateConfiguration = new HibernateConfiguration();
+        MigrationsExecutorFlyway flyway = new MigrationsExecutorFlyway(hibernateConfiguration.getDataSource());
         flyway.executeMigrations();
 
-        Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
         TemplateProcessor templateProcessor = new TemplateProcessorImpl(TEMPLATES_DIR);
-        UsersWebServer usersWebServer = getUsersWebServer(gson, templateProcessor);
+        UsersWebServer usersWebServer = getUsersWebServer(hibernateConfiguration, templateProcessor);
         usersWebServer.join();
     }
 
-    private static UsersWebServer getUsersWebServer(Gson gson, TemplateProcessor templateProcessor) throws Exception {
-        UserRepository userRepository = new UserRepositoryImpl();
+    private static UsersWebServer getUsersWebServer(
+            HibernateConfiguration hibernateConfiguration, TemplateProcessor templateProcessor) throws Exception {
+        UserRepository userRepository = new UserRepositoryImpl(hibernateConfiguration);
         UserAuthService authService = new UserAuthServiceImpl(userRepository);
-        ClientRepository clientRepository = new ClientRepositoryImpl();
+        ClientRepository clientRepository = new ClientRepositoryImpl(hibernateConfiguration);
         ClientService clientService = new ClientServiceImpl(clientRepository);
-        UsersWebServer usersWebServer = new UsersWebServerExtended(
-                WEB_SERVER_PORT, authService, templateProcessor, clientService);
+        UsersWebServer usersWebServer =
+                new UsersWebServerExtended(WEB_SERVER_PORT, authService, templateProcessor, clientService);
 
         usersWebServer.start();
         return usersWebServer;

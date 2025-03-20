@@ -22,10 +22,7 @@ public class UsersWebServerBasic implements UsersWebServer {
     private final Server server;
     private final ClientService clientService;
 
-    public UsersWebServerBasic(
-            int port,
-            TemplateProcessor templateProcessor,
-            ClientService clientService) {
+    public UsersWebServerBasic(int port, TemplateProcessor templateProcessor, ClientService clientService) {
         this.templateProcessor = templateProcessor;
         server = new Server(port);
         this.clientService = clientService;

@@ -15,10 +15,7 @@ public class UsersWebServerExtended extends UsersWebServerBasic {
     private final UserAuthService authService;
 
     public UsersWebServerExtended(
-            int port,
-            UserAuthService authService,
-            TemplateProcessor templateProcessor,
-            ClientService clientService) {
+            int port, UserAuthService authService, TemplateProcessor templateProcessor, ClientService clientService) {
         super(port, templateProcessor, clientService);
         this.authService = authService;
     }

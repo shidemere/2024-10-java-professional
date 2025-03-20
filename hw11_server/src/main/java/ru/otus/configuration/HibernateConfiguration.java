@@ -16,12 +16,12 @@ import ru.otus.model.User;
 
 @Slf4j
 public class HibernateConfiguration {
-    private static final String URL = "jdbc:postgresql://localhost:5430/main?useUnicode=true&characterEncoding=UTF-8";
-    private static final String USERNAME = "username";
-    private static final String PASSWORD = "password";
-    private static volatile SessionFactory sessionFactory;
+    private final String URL = "jdbc:postgresql://localhost:5430/main?useUnicode=true&characterEncoding=UTF-8";
+    private final String USERNAME = "username";
+    private final String PASSWORD = "password";
+    private SessionFactory sessionFactory;
 
-    private static SessionFactory getSessionFactory() {
+    private SessionFactory getSessionFactory() {
         if (sessionFactory != null) {
             return sessionFactory;
         }
@@ -42,11 +42,11 @@ public class HibernateConfiguration {
         }
     }
 
-    public static Session getSession() {
+    public Session getSession() {
         return getSessionFactory().openSession();
     }
 
-    private static Configuration getConfiguration() {
+    private Configuration getConfiguration() {
         Configuration configuration = new Configuration();
 
         Properties props = new Properties();
@@ -72,7 +72,7 @@ public class HibernateConfiguration {
         return configuration;
     }
 
-    public static DataSource getDataSource() {
+    public DataSource getDataSource() {
         return new DriverDataSource(
                 HibernateConfiguration.class.getClassLoader(), "org.postgresql.Driver", URL, USERNAME, PASSWORD);
     }

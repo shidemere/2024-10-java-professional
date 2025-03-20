@@ -12,9 +12,11 @@ import ru.otus.model.User;
 @RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepository {
 
+    private final HibernateConfiguration hibernateConfiguration;
+
     @Override
     public Optional<User> findByLogin(String login) {
-        try (Session session = HibernateConfiguration.getSession()) {
+        try (Session session = hibernateConfiguration.getSession()) {
             return Optional.ofNullable(session.createQuery("FROM User WHERE login = :login", User.class)
                     .setParameter("login", login)
                     .uniqueResult());
