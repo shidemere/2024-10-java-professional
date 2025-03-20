@@ -31,4 +31,6 @@ include("hw05_ByteCode")
 include("hw08_serialization")
 include("hw09_jdbc")
 include("hw10_cache")
+include("hw11_server")
 include("hw13_context")
+
