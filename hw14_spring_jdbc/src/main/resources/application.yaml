@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5430/main
+    username: username
+    password: password
+
+  jdbc:
+    template:
+      fetch-size: 50
+
+flyway:
+  enabled: true
+  locations: classpath:db/migration

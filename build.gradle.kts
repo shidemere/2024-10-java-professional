@@ -105,8 +105,12 @@ subprojects {
 
     tasks.withType<JavaCompile> {
         options.encoding = "UTF-8"
+        /*
+        Исключает две конкретные проверки из общего списка проверок компилятора:
+        -serial — отключает предупреждения, связанные с сериализацией (например, если класс реализует Serializable, но не имеет поля serialVersionUID).
+        -processing — отключает предупреждения о некорректной обработке аннотаций (например, если аннотации не обрабатываются процессором).
+        */
         options.compilerArgs.addAll(listOf("-Xlint:all,-serial,-processing"))
-
         dependsOn("spotlessApply")
     }
     apply<name.remal.gradle_plugins.sonarlint.SonarLintPlugin>()
