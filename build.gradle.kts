@@ -44,6 +44,7 @@ allprojects {
     val freemarker: String by project
     val hibernateCoreVersion: String by project
     val reflections: String by project
+    val grpc: String by project
 
     apply(plugin = "io.spring.dependency-management")
     dependencyManagement {
@@ -72,6 +73,9 @@ allprojects {
             dependency("org.freemarker:freemarker:$freemarker")
 
             dependency("org.reflections:reflections:$reflections")
+            dependency("io.grpc:grpc-netty:$grpc")
+            dependency("io.grpc:grpc-protobuf:$grpc")
+            dependency("io.grpc:grpc-stub:$grpc")
         }
     }
 
@@ -92,6 +96,7 @@ allprojects {
             force("commons-io:commons-io:2.15.1")
             force("com.google.errorprone:error_prone_annotations:2.26.1")
             force("com.google.j2objc:j2objc-annotations:3.0.0")
+
         }
     }
 }
