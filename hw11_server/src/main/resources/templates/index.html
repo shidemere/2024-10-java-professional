@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homework 12</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            overflow: hidden;
+        }
+
+        .container {
+            position: relative;
+            width: 600px;
+            padding: 50px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            transform: scale(0.95);
+            transition: all 0.5s;
+            text-align: center;
+        }
+
+        .container:hover {
+            transform: scale(1);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 40px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            font-size: 2.5em;
+        }
+
+        .action-button {
+            display: inline-block;
+            padding: 18px 45px;
+            background: #4ecdc4;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
+        }
+
+        .action-button:hover {
+            background: #45b7b0;
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(78, 205, 196, 0.4);
+        }
+
+        @media (max-width: 680px) {
+            .container {
+                width: 90%;
+                padding: 30px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+        }
+
+        .bubbles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .bubbles span {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 10s linear infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) scale(0);
+            }
+            100% {
+                transform: translateY(-10vh) scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="bubbles">
+    <span style="left: 10%; animation-delay: 0s;"></span>
+    <span style="left: 20%; animation-delay: 2s;"></span>
+    <span style="left: 50%; animation-delay: 5s;"></span>
+    <span style="left: 70%; animation-delay: 7s;"></span>
+</div>
+
+<div class="container">
+    <h1>Добро пожаловать в Домашнее Задание #12</h1>
+    <a href="/client" class="action-button">Получить список клиентов</a>
+</div>
+</body>
+</html>
