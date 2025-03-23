@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Form</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            overflow: hidden;
+        }
+
+        .container {
+            position: relative;
+            width: 380px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            transform: scale(0.95);
+            transition: all 0.5s;
+        }
+
+        .container:hover {
+            transform: scale(1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            background: #f0f0f0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(78, 205, 196, 0.2);
+        }
+
+        .form-group input::placeholder {
+            color: #999;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: #4ecdc4;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            background: #45b7b0;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(78, 205, 196, 0.4);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                width: 90%;
+                padding: 30px;
+            }
+        }
+
+        .bubbles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .bubbles span {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 10s linear infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) scale(0);
+            }
+            100% {
+                transform: translateY(-10vh) scale(1);
+            }
+        }
+
+
+    </style>
+</head>
+<body>
+<div class="bubbles">
+    <span style="left: 10%; animation-delay: 0s;"></span>
+    <span style="left: 20%; animation-delay: 2s;"></span>
+    <span style="left: 50%; animation-delay: 5s;"></span>
+    <span style="left: 70%; animation-delay: 7s;"></span>
+</div>
+
+<div class="container">
+    <h2>Необходима аутентификация</h2>
+    <form action="/login" method="POST">
+        <div class="form-group">
+            <input type="text" name="login" placeholder="Логин" required>
+        </div>
+        <div class="form-group">
+            <input type="password" name="password" placeholder="Пароль" required>
+        </div>
+        <button type="submit">Войти</button>
+    </form>
+</div>
+</body>
+</html>
