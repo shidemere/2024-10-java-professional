@@ -8,39 +8,30 @@ public class Main {
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
     private static volatile long currentThreadId;
     private static volatile boolean isForward = true;
-    private static volatile boolean isRunning = true;
 
     public synchronized void countAndPrint(int begin, int end) {
         int current = begin;
-        while (isRunning) {
+        while (true) {
             try {
                 /*
-                   В первой итерации застрахуемся от срабатывания второго потока первым при помомщи явного присваивания
+                   В первой итерации застрахуемся от срабатывания второго потока первым при помощи явного присваивания
                    в методе main. Здесь поток 2 будет заморожен и дальше пойдет поток 1.
                 */
                 while (currentThreadId == Thread.currentThread().threadId()) {
                     wait();
                 }
 
-                logger.info(Thread.currentThread().getName() + " " + current);
+                logger.info("{} {}", Thread.currentThread().getName(), current);
 
-                /*
-                       Заканчивать нам надо только если мы достигли нижней границы при обратном направлении.
-                       Это здесь и проверяется.
-                */
-                if (current == begin && !isForward) {
-                    isRunning = false; // Останавливаем все потоки
-                }
-
-                // Меняем направление при достижении верхней границы
+                // Меняем направление в зависимости от тог, какой границы мы достигли: верхней или нижней.
                 if (current == end) {
                     isForward = false;
+                } else if (current == begin) {
+                    isForward = true;
                 }
 
-                // Обновляем текущее значение (если не достигли 1)
-                if (isRunning) {
-                    current = isForward ? current + 1 : current - 1;
-                }
+                // Переменная совершает шаг в зависимости от isForward
+                current = isForward ? current + 1 : current - 1;
 
                 // Передаём ход другому потоку
                 currentThreadId = Thread.currentThread().threadId();
@@ -48,6 +39,7 @@ public class Main {
 
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
+                break;
             }
         }
     }
