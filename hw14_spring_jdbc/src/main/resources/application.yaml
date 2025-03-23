@@ -3,7 +3,6 @@ spring:
     url: jdbc:postgresql://localhost:5430/main
     username: username
     password: password
-    driver-class-name: org.postgresql.Driver
 
   jdbc:
     template:

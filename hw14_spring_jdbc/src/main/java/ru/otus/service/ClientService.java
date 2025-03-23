@@ -10,7 +10,6 @@ import ru.otus.dto.ClientRequest;
 import ru.otus.model.Address;
 import ru.otus.model.Client;
 import ru.otus.model.Phone;
-import ru.otus.repository.AddressRepository;
 import ru.otus.repository.ClientRepository;
 
 @Service
@@ -18,7 +17,6 @@ import ru.otus.repository.ClientRepository;
 public class ClientService {
 
     private final ClientRepository clientRepository;
-    private final AddressRepository addressRepository;
 
     @Transactional(readOnly = true)
     public Iterable<Client> getAllClients() {
