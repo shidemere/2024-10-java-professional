@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Управление клиентами</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #495057;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .phone-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .remove-phone-btn {
+            background-color: #dc3545;
+            padding: 0 12px;
+        }
+
+        .clients-list {
+            margin-top: 30px;
+        }
+
+        .client-card {
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            background-color: #fff;
+        }
+
+        .error-message {
+            color: #dc3545;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Управление клиентами</h1>
+
+    <div class="form-section">
+        <h2>Добавить нового клиента</h2>
+        <form id="clientForm">
+            <div class="input-group">
+                <label for="name">Имя клиента:</label>
+                <input type="text" id="name" required>
+            </div>
+
+            <div class="input-group">
+                <label for="street">Адрес:</label>
+                <input type="text" id="street">
+            </div>
+
+            <div class="input-group">
+                <label>Телефоны:</label>
+                <div id="phonesContainer">
+                    <div class="phone-input-group">
+                        <input type="text" class="phone-input" placeholder="Номер телефона" required>
+                        <button type="button" class="remove-phone-btn">×</button>
+                    </div>
+                </div>
+                <button type="button" id="addPhoneBtn">Добавить телефон</button>
+            </div>
+
+            <button type="submit">Сохранить клиента</button>
+        </form>
+        <div id="errorMessage" class="error-message"></div>
+    </div>
+
+    <div class="clients-list">
+        <h2>Список клиентов</h2>
+        <div id="clientsList"></div>
+    </div>
+</div>
+
+<script>
+    // Инициализация
+    document.addEventListener('DOMContentLoaded', () => {
+        loadClients();
+        setupPhoneHandlers();
+    });
+
+    // Обработчики телефонов
+    function setupPhoneHandlers() {
+        document.getElementById('addPhoneBtn').addEventListener('click', addPhoneField);
+        document.getElementById('clientForm').addEventListener('submit', handleSubmit);
+    }
+
+    // Добавление поля телефона
+    function addPhoneField() {
+        const container = document.getElementById('phonesContainer');
+        const div = document.createElement('div');
+        div.className = 'phone-input-group';
+        div.innerHTML = `
+                <input type="text" class="phone-input" placeholder="Номер телефона" required>
+                <button type="button" class="remove-phone-btn">×</button>
+            `;
+        container.appendChild(div);
+
+        div.querySelector('.remove-phone-btn').addEventListener('click', () => {
+            if (document.querySelectorAll('.phone-input-group').length > 1) {
+                div.remove();
+            }
+        });
+    }
+
+    // Обработка отправки формы
+    async function handleSubmit(e) {
+        e.preventDefault();
+        const clientData = {
+            name: document.getElementById('name').value,
+            address: { street: document.getElementById('street').value },
+            phones: Array.from(document.querySelectorAll('.phone-input'))
+                .map(input => ({ number: input.value.trim() }))
+                .filter(phone => phone.number)
+        };
+
+        if (!validateForm(clientData)) return;
+
+        try {
+            const response = await fetch('/api/client', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(clientData)
+            });
+
+            if (!response.ok) throw new Error('Ошибка сервера');
+
+            resetForm();
+            loadClients();
+            showError('');
+        } catch (error) {
+            showError(`Ошибка: ${error.message}`);
+        }
+    }
+
+    // Валидация формы
+    function validateForm({ name, phones }) {
+        if (!name.trim()) {
+            showError('Имя клиента обязательно');
+            return false;
+        }
+        if (phones.length === 0) {
+            showError('Добавьте хотя бы один телефон');
+            return false;
+        }
+        return true;
+    }
+
+    // Загрузка клиентов
+    async function loadClients() {
+        try {
+            const response = await fetch('/api/client');
+            const clients = await response.json();
+            renderClients(clients);
+        } catch (error) {
+            showError('Ошибка загрузки данных');
+        }
+    }
+
+    // Отображение клиентов
+    function renderClients(clients) {
+        const container = document.getElementById('clientsList');
+        container.innerHTML = clients.map(client => `
+                <div class="client-card">
+                    <h3>${client.name}</h3>
+                    <p>ID: ${client.id}</p>
+                    ${client.address ? `<p>Адрес: ${client.address.street}</p>` : ''}
+                    ${client.phones?.length ? `
+                        <p>Телефоны:
+                            ${client.phones.map(p => p.number).join(', ')}
+                        </p>` : ''}
+                </div>
+            `).join('');
+    }
+
+    // Сброс формы
+    function resetForm() {
+        document.getElementById('clientForm').reset();
+        const phoneInputs = document.querySelectorAll('.phone-input-group');
+        phoneInputs.forEach((input, index) => {
+            if (index > 0) input.remove();
+            else input.querySelector('input').value = '';
+        });
+    }
+
+    // Отображение ошибок
+    function showError(message) {
+        document.getElementById('errorMessage').textContent = message;
+    }
+</script>
+</body>
+</html>
